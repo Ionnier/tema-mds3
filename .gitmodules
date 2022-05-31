@@ -1,0 +1,9 @@
+[submodule "tts-service-module"]
+	path = tts-service-module
+	url = https://github.com/Ionnier/tts-service-module
+[submodule "auth-service-module"]
+	path = auth-service-module
+	url = https://github.com/Ionnier/auth-service-module
+[submodule "message-service-module"]
+	path = message-service-module
+	url = https://github.com/Ionnier/message-service-module
