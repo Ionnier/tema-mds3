@@ -11,8 +11,6 @@ services:
     auth_service:
         build: ./auth-service-module/
         restart: always
-        ports:
-            - 3000:3000
         environment:
             AMQP_SERVER: rabbitmqserver
             EXCHANGE_NAME: DEFAULT_EXCHANGE
@@ -23,8 +21,6 @@ services:
     message_service:
         build: ./message-service-module
         restart: always
-        ports:
-            - 3001:3000
         environment:
             AMQP_SERVER: rabbitmqserver
             EXCHANGE_NAME: DEFAULT_EXCHANGE
@@ -35,8 +31,6 @@ services:
     tts_service:
         build: ./tts-service-module/
         restart: always
-        ports:
-            - 3002:3000
         environment:
             RABBITMQ: rabbitmqserver
             EXCHANGE_NAME: DEFAULT_EXCHANGE
@@ -52,5 +46,16 @@ services:
         depends_on:
             rabbitmqserver:
                 condition: service_healthy
+    web_app:
+        build: 
+            context: ./front-end
+            args:
+                VITE_AUTH_SERVICE: http://auth_service:3000
+                VITE_TTS_SERVICE: http://tts_service:3000
+                VITE_MESSAGE_SERVICE: http://message_service:3000
+        restart: always
+        ports:
+            - 3000:80
+
     
 
