@@ -1,0 +1,56 @@
+version: '3'
+services:
+    rabbitmqserver:
+        image: rabbitmq
+        restart: always
+        healthcheck:
+            test: rabbitmq-diagnostics -q ping
+            interval: 30s
+            timeout: 30s
+            retries: 3
+    auth_service:
+        build: ./auth-service-module/
+        restart: always
+        ports:
+            - 3000:3000
+        environment:
+            AMQP_SERVER: rabbitmqserver
+            EXCHANGE_NAME: DEFAULT_EXCHANGE
+            JWT_SECRET: SECRET_JWT
+        depends_on:
+            rabbitmqserver:
+                condition: service_healthy
+    message_service:
+        build: ./message-service-module
+        restart: always
+        ports:
+            - 3001:3000
+        environment:
+            AMQP_SERVER: rabbitmqserver
+            EXCHANGE_NAME: DEFAULT_EXCHANGE
+            JWT_SECRET: SECRET_JWT
+        depends_on:
+            rabbitmqserver:
+                condition: service_healthy
+    tts_service:
+        build: ./tts-service-module/
+        restart: always
+        ports:
+            - 3002:3000
+        environment:
+            RABBITMQ: rabbitmqserver
+            EXCHANGE_NAME: DEFAULT_EXCHANGE
+        depends_on:
+            rabbitmqserver:
+                condition: service_healthy
+    log_service:
+        build: ./log-module/
+        restart: always
+        environment:
+            AMQP_SERVER: rabbitmqserver
+            EXCHANGE_NAME: DEFAULT_EXCHANGE
+        depends_on:
+            rabbitmqserver:
+                condition: service_healthy
+    
+
