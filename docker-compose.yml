@@ -52,5 +52,14 @@ services:
         depends_on:
             rabbitmqserver:
                 condition: service_healthy
-    
+    web_app:
+        build: 
+            context: ./front-end
+            args:
+                VITE_AUTH_SERVICE: http://localhost:3001
+                VITE_TTS_SERVICE: http://localhost:3003
+                VITE_MESSAGE_SERVICE: http://localhost:3002
+        restart: always
+        ports:
+            - 3000:80
 
